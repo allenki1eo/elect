@@ -6,18 +6,18 @@ export default {
   theme: {
     extend: {
       colors: {
-        bg: '#0A0A0F',
-        surface: '#13131A',
-        'surface-2': '#1E1E2A',
-        border: '#2A2A3A',
+        bg: '#F8F9FC',
+        surface: '#FFFFFF',
+        'surface-2': '#F1F3F9',
+        border: '#E2E5EF',
         accent: '#6C63FF',
         'accent-2': '#FF6584',
-        gold: '#F5C842',
-        silver: '#C0C0D0',
+        gold: '#D4A012',
+        silver: '#8E8E9A',
         bronze: '#CD7F32',
-        'text-primary': '#F0F0FF',
-        'text-muted': '#8080A0',
-        success: '#22D3A0',
+        'text-primary': '#1A1A2E',
+        'text-muted': '#6B7094',
+        success: '#16A07A',
       },
       fontFamily: {
         display: ['Syne', 'sans-serif'],

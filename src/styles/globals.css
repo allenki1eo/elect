@@ -4,18 +4,18 @@
 @tailwind utilities;
 
 :root {
-  --color-bg: #0A0A0F;
-  --color-surface: #13131A;
-  --color-surface-2: #1E1E2A;
-  --color-border: #2A2A3A;
+  --color-bg: #F8F9FC;
+  --color-surface: #FFFFFF;
+  --color-surface-2: #F1F3F9;
+  --color-border: #E2E5EF;
   --color-accent: #6C63FF;
   --color-accent-2: #FF6584;
-  --color-gold: #F5C842;
-  --color-silver: #C0C0D0;
+  --color-gold: #D4A012;
+  --color-silver: #8E8E9A;
   --color-bronze: #CD7F32;
-  --color-text: #F0F0FF;
-  --color-text-muted: #8080A0;
-  --color-success: #22D3A0;
+  --color-text: #1A1A2E;
+  --color-text-muted: #6B7094;
+  --color-success: #16A07A;
   --font-display: 'Syne', sans-serif;
   --font-body: 'DM Sans', sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
@@ -25,24 +25,9 @@
 
 body {
   background-color: var(--color-bg);
-  background-image: url('/thene.png');
-  background-size: cover;
-  background-position: center top;
-  background-repeat: no-repeat;
-  background-attachment: fixed;
   color: var(--color-text);
   font-family: var(--font-body);
   min-height: 100vh;
-}
-
-/* Dark overlay so text stays readable over the background */
-body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  background: rgba(10, 10, 15, 0.82);
-  pointer-events: none;
-  z-index: 0;
 }
 
 #root {
@@ -55,6 +40,11 @@ h1, h2, h3, h4 {
 }
 
 .font-mono { font-family: var(--font-mono); }
+
+/* Gold glow for #1 leaderboard position */
+.gold-glow {
+  box-shadow: 0 0 20px rgba(212, 160, 18, 0.15), 0 0 40px rgba(212, 160, 18, 0.05);
+}
 
 /* shadcn animation utilities */
 @keyframes fade-in-0 { from { opacity: 0; } to { opacity: 1; } }

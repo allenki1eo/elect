@@ -45,9 +45,18 @@ export const getTotalVotes = query({
       .query("stats")
       .withIndex("by_key", (q) => q.eq("key", "total_votes"))
       .first();
-    return stat?.value ?? 0;
+    if (stat && stat.value > 0) return stat.value;
+    const votes = await ctx.db.query("votes").collect();
+    return votes.length;
   },
 });
+
+const corsHeaders = {
+  "Content-Type": "application/json",
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
+  "Access-Control-Allow-Headers": "Content-Type",
+};
 
 export const castVoteAction = httpAction(async (ctx, request) => {
   const body = await request.json();
@@ -69,7 +78,7 @@ export const castVoteAction = httpAction(async (ctx, request) => {
   if (existingIp) {
     return new Response(
       JSON.stringify({ error: "ALREADY_VOTED", message: "Kura yako tayari imehesabiwa!" }),
-      { status: 400, headers: { "Content-Type": "application/json" } }
+      { status: 400, headers: corsHeaders }
     );
   }
 
@@ -78,7 +87,7 @@ export const castVoteAction = httpAction(async (ctx, request) => {
   if (existingFp) {
     return new Response(
       JSON.stringify({ error: "ALREADY_VOTED", message: "Kura yako tayari imehesabiwa!" }),
-      { status: 400, headers: { "Content-Type": "application/json" } }
+      { status: 400, headers: corsHeaders }
     );
   }
 
@@ -92,7 +101,7 @@ export const castVoteAction = httpAction(async (ctx, request) => {
 
   return new Response(JSON.stringify(result), {
     status: 200,
-    headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" },
+    headers: corsHeaders,
   });
 });
 
