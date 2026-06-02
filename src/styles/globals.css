@@ -35,3 +35,26 @@ h1, h2, h3, h4 {
 }
 
 .font-mono { font-family: var(--font-mono); }
+
+/* shadcn animation utilities */
+@keyframes fade-in-0 { from { opacity: 0; } to { opacity: 1; } }
+@keyframes fade-out-0 { from { opacity: 1; } to { opacity: 0; } }
+@keyframes zoom-in-95 { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+@keyframes zoom-out-95 { from { opacity: 1; transform: scale(1); } to { opacity: 0; transform: scale(0.95); } }
+@keyframes slide-in-from-left-half { from { transform: translate(-50%, -48%); } to { transform: translate(-50%, -50%); } }
+@keyframes slide-out-to-left-half { from { transform: translate(-50%, -50%); } to { transform: translate(-50%, -48%); } }
+
+.data-\[state\=open\]\:animate-in[data-state=open] { animation: fade-in-0 0.2s ease; }
+.data-\[state\=closed\]\:animate-out[data-state=closed] { animation: fade-out-0 0.2s ease; }
+.data-\[state\=open\]\:fade-in-0[data-state=open] { animation: fade-in-0 0.2s ease; }
+.data-\[state\=closed\]\:fade-out-0[data-state=closed] { animation: fade-out-0 0.15s ease; }
+.data-\[state\=open\]\:zoom-in-95[data-state=open] { animation: zoom-in-95 0.2s ease; }
+.data-\[state\=closed\]\:zoom-out-95[data-state=closed] { animation: zoom-out-95 0.15s ease; }
+.data-\[state\=open\]\:slide-in-from-left-1\/2[data-state=open],
+.data-\[state\=open\]\:slide-in-from-top-\[48\%\][data-state=open] {
+  animation: slide-in-from-left-half 0.2s ease;
+}
+.data-\[state\=closed\]\:slide-out-to-left-1\/2[data-state=closed],
+.data-\[state\=closed\]\:slide-out-to-top-\[48\%\][data-state=closed] {
+  animation: slide-out-to-left-half 0.15s ease;
+}
