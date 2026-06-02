@@ -3,6 +3,10 @@ import { motion, AnimatePresence } from 'framer-motion';
 import confetti from 'canvas-confetti';
 import { Candidate } from '../types';
 import { useFingerprint } from '../hooks/useFingerprint';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog';
+import { Button } from './ui/button';
+import { Input } from './ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 
 interface Props {
   candidate: Candidate;
@@ -29,38 +33,19 @@ export default function VoteModal({ candidate, onClose, onVoted }: Props) {
   const handleSubmit = async () => {
     if (!voterName.trim() || !voterClass) return;
     setStep('processing');
-
     try {
       const convexSiteUrl = import.meta.env.VITE_CONVEX_URL?.replace('.cloud', '.site') ?? '';
       const res = await fetch(`${convexSiteUrl}/cast-vote`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          candidateId: candidate._id,
-          voterName: voterName.trim(),
-          voterClass,
-          fingerprint: fingerprint || 'unknown',
-        }),
+        body: JSON.stringify({ candidateId: candidate._id, voterName: voterName.trim(), voterClass, fingerprint: fingerprint || 'unknown' }),
       });
-
       const data = await res.json();
-
-      if (data.error === 'ALREADY_VOTED') {
-        setErrorMsg(data.message);
-        setStep('error');
-        return;
-      }
-
+      if (data.error === 'ALREADY_VOTED') { setErrorMsg(data.message); setStep('error'); return; }
       setShareToken(data.shareToken);
       setStep('success');
       onVoted(data.shareToken);
-
-      confetti({
-        particleCount: 150,
-        spread: 80,
-        colors: ['#6C63FF', '#F5C842', '#FF6584', '#22D3A0'],
-        origin: { y: 0.6 },
-      });
+      confetti({ particleCount: 150, spread: 80, colors: ['#6C63FF', '#F5C842', '#FF6584', '#22D3A0'], origin: { y: 0.6 } });
     } catch {
       setErrorMsg('Something went wrong. Please try again.');
       setStep('error');
@@ -68,156 +53,118 @@ export default function VoteModal({ candidate, onClose, onVoted }: Props) {
   };
 
   return (
-    <motion.div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4"
-      style={{ background: 'rgba(10,10,15,0.85)', backdropFilter: 'blur(8px)' }}
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
-    >
-      <motion.div
-        className="w-full max-w-md rounded-3xl p-8 relative"
-        style={{ background: 'var(--color-surface-2)', border: '1px solid var(--color-border)' }}
-        initial={{ scale: 0.9, y: 20 }}
-        animate={{ scale: 1, y: 0 }}
-        exit={{ scale: 0.9, y: 20 }}
-      >
+    <Dialog open onOpenChange={(open) => { if (!open) onClose(); }}>
+      <DialogContent>
         <AnimatePresence mode="wait">
           {step === 'confirm' && (
             <motion.div key="confirm" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-              <h2 className="text-xl font-bold mb-2" style={{ fontFamily: 'var(--font-display)' }}>
-                Confirm Your Vote
-              </h2>
-              <p className="mb-6" style={{ color: 'var(--color-text-muted)' }}>
-                You're voting for:
-              </p>
-              <div className="flex items-center gap-4 p-4 rounded-xl mb-6" style={{ background: `${candidate.colorHex}15`, border: `1px solid ${candidate.colorHex}40` }}>
-                {candidate.photoUrl ? (
-                  <img src={candidate.photoUrl} alt={candidate.name} className="w-16 h-16 rounded-full object-cover" />
-                ) : (
-                  <div className="w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold" style={{ background: `${candidate.colorHex}22`, color: candidate.colorHex }}>
-                    {candidate.name.charAt(0)}
-                  </div>
-                )}
+              <DialogHeader>
+                <DialogTitle>Confirm Your Vote</DialogTitle>
+              </DialogHeader>
+              <p className="text-sm mt-1 mb-4" style={{ color: 'var(--color-text-muted)' }}>You're about to vote for:</p>
+              <div className="flex items-center gap-4 p-4 rounded-2xl mb-6" style={{ background: `${candidate.colorHex}12`, border: `1px solid ${candidate.colorHex}40` }}>
+                {candidate.photoUrl
+                  ? <img src={candidate.photoUrl} alt={candidate.name} className="w-16 h-16 rounded-full object-cover" />
+                  : <div className="w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold" style={{ background: `${candidate.colorHex}22`, color: candidate.colorHex }}>{candidate.name.charAt(0)}</div>
+                }
                 <div>
-                  <p className="font-bold text-lg" style={{ fontFamily: 'var(--font-display)', color: candidate.colorHex }}>{candidate.name}</p>
+                  <p className="font-bold text-xl" style={{ fontFamily: 'var(--font-display)', color: candidate.colorHex }}>{candidate.name}</p>
                   <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>{candidate.class}</p>
                 </div>
               </div>
               <div className="flex gap-3">
-                <button onClick={onClose} className="flex-1 py-3 rounded-xl font-semibold" style={{ background: 'var(--color-surface)', color: 'var(--color-text-muted)' }}>
-                  Cancel
-                </button>
-                <button onClick={() => setStep('form')} className="flex-1 py-3 rounded-xl font-semibold text-white" style={{ background: candidate.colorHex }}>
-                  Yes, Vote!
-                </button>
+                <Button variant="outline" className="flex-1" onClick={onClose}>Cancel</Button>
+                <Button className="flex-1" onClick={() => setStep('form')} style={{ background: candidate.colorHex }}>
+                  Yes, Vote! 🗳️
+                </Button>
               </div>
             </motion.div>
           )}
 
           {step === 'form' && (
             <motion.div key="form" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-              <h2 className="text-xl font-bold mb-6" style={{ fontFamily: 'var(--font-display)' }}>
-                Who Are You? 👋
-              </h2>
-              <div className="space-y-4 mb-6">
+              <DialogHeader>
+                <DialogTitle>Who Are You? 👋</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4 mt-4 mb-6">
                 <div>
-                  <label className="block text-sm mb-1" style={{ color: 'var(--color-text-muted)' }}>First Name *</label>
-                  <input
-                    type="text"
+                  <label className="block text-sm font-medium mb-1.5" style={{ color: 'var(--color-text-muted)' }}>First Name *</label>
+                  <Input
                     value={voterName}
                     onChange={(e) => setVoterName(e.target.value)}
                     placeholder="e.g. Baraka"
-                    className="w-full px-4 py-3 rounded-xl outline-none"
-                    style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)', color: 'var(--color-text)' }}
                   />
                 </div>
                 <div>
-                  <label className="block text-sm mb-1" style={{ color: 'var(--color-text-muted)' }}>Your Class *</label>
-                  <select
-                    value={voterClass}
-                    onChange={(e) => setVoterClass(e.target.value)}
-                    className="w-full px-4 py-3 rounded-xl outline-none"
-                    style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)', color: voterClass ? 'var(--color-text)' : 'var(--color-text-muted)' }}
-                  >
-                    <option value="">Select your class...</option>
-                    {CLASSES.map((c) => <option key={c} value={c}>{c}</option>)}
-                  </select>
+                  <label className="block text-sm font-medium mb-1.5" style={{ color: 'var(--color-text-muted)' }}>Your Class *</label>
+                  <Select value={voterClass} onValueChange={setVoterClass}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select your class..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {CLASSES.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
               <div className="flex gap-3">
-                <button onClick={() => setStep('confirm')} className="flex-1 py-3 rounded-xl font-semibold" style={{ background: 'var(--color-surface)', color: 'var(--color-text-muted)' }}>
-                  Back
-                </button>
-                <button
-                  onClick={handleSubmit}
+                <Button variant="outline" className="flex-1" onClick={() => setStep('confirm')}>Back</Button>
+                <Button
+                  className="flex-1"
                   disabled={!voterName.trim() || !voterClass}
-                  className="flex-1 py-3 rounded-xl font-semibold text-white disabled:opacity-40"
+                  onClick={handleSubmit}
                   style={{ background: candidate.colorHex }}
                 >
                   Cast My Vote 🗳️
-                </button>
+                </Button>
               </div>
             </motion.div>
           )}
 
           {step === 'processing' && (
-            <motion.div key="processing" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="text-center py-8">
+            <motion.div key="processing" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="text-center py-12">
               <div className="w-16 h-16 mx-auto mb-4 rounded-full border-4 border-t-transparent animate-spin" style={{ borderColor: `${candidate.colorHex} transparent transparent transparent` }} />
-              <p className="text-lg" style={{ color: 'var(--color-text-muted)' }}>Sending your vote...</p>
+              <p style={{ color: 'var(--color-text-muted)' }}>Casting your vote...</p>
             </motion.div>
           )}
 
           {step === 'success' && (
             <motion.div key="success" initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }} className="text-center">
-              <div className="text-5xl mb-4">🎉</div>
+              <div className="text-6xl mb-4">🎉</div>
               <h2 className="text-2xl font-bold mb-2" style={{ fontFamily: 'var(--font-display)', color: 'var(--color-success)' }}>
                 Vote Counted!
               </h2>
               <p className="mb-6" style={{ color: 'var(--color-text-muted)' }}>
-                Your vote for <strong style={{ color: candidate.colorHex }}>{candidate.name}</strong> has been counted!
+                Your vote for <strong style={{ color: candidate.colorHex }}>{candidate.name}</strong> is in!
               </p>
               <div className="flex gap-3">
-                <button
-                  onClick={() => window.location.href = `/share/${shareToken}`}
-                  className="flex-1 py-3 rounded-xl font-semibold text-white"
-                  style={{ background: candidate.colorHex }}
-                >
+                <Button className="flex-1" onClick={() => window.location.href = `/share/${shareToken}`} style={{ background: candidate.colorHex }}>
                   Share My Vote 📲
-                </button>
-                <button
-                  onClick={() => window.location.href = '/results'}
-                  className="flex-1 py-3 rounded-xl font-semibold"
-                  style={{ background: 'var(--color-surface)', color: 'var(--color-text)' }}
-                >
+                </Button>
+                <Button variant="outline" className="flex-1" onClick={() => window.location.href = '/results'}>
                   Leaderboard 🏆
-                </button>
+                </Button>
               </div>
             </motion.div>
           )}
 
           {step === 'error' && (
             <motion.div key="error" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="text-center">
-              <div className="text-5xl mb-4">😊</div>
-              <h2 className="text-xl font-bold mb-2" style={{ fontFamily: 'var(--font-display)' }}>
-                Already Voted!
-              </h2>
+              <div className="text-6xl mb-4">😊</div>
+              <h2 className="text-xl font-bold mb-2" style={{ fontFamily: 'var(--font-display)' }}>Already Voted!</h2>
               <p className="mb-6" style={{ color: 'var(--color-text-muted)' }}>
                 {errorMsg || 'Kura yako tayari imehesabiwa! You already voted.'}
               </p>
               <div className="flex gap-3">
-                <button onClick={onClose} className="flex-1 py-3 rounded-xl font-semibold" style={{ background: 'var(--color-surface)', color: 'var(--color-text-muted)' }}>
-                  Close
-                </button>
-                <button onClick={() => window.location.href = '/results'} className="flex-1 py-3 rounded-xl font-semibold text-white" style={{ background: 'var(--color-accent)' }}>
+                <Button variant="outline" className="flex-1" onClick={onClose}>Close</Button>
+                <Button className="flex-1" onClick={() => window.location.href = '/results'}>
                   See Leaderboard
-                </button>
+                </Button>
               </div>
             </motion.div>
           )}
         </AnimatePresence>
-      </motion.div>
-    </motion.div>
+      </DialogContent>
+    </Dialog>
   );
 }

@@ -32,7 +32,7 @@ export default function VotePoster({ candidate, vote }: Props) {
         ★ VOTES ZIKO ONLINE ★
       </div>
       <div style={{ fontSize: 18, color: '#8080A0', marginBottom: 48 }}>
-        Tenri Primary School Elections 2025
+        Tenri Primary School Elections 2026
       </div>
       {candidate.photoUrl ? (
         <img

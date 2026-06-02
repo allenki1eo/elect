@@ -1,6 +1,8 @@
 import { useState } from 'react';
+import { Download, MessageCircle, Link2, Vote } from 'lucide-react';
 import { buildWhatsAppUrl, buildShareUrl, copyToClipboard } from '../lib/share';
 import { generatePosterPng, downloadPng } from '../lib/poster';
+import { Button } from './ui/button';
 
 interface Props {
   candidateName: string;
@@ -32,18 +34,26 @@ export default function ShareButtons({ candidateName, token }: Props) {
 
   return (
     <div className="flex flex-col gap-3 w-full">
-      <button onClick={handleDownload} disabled={generating} className="w-full py-3 rounded-xl font-semibold text-white" style={{ background: 'var(--color-accent)' }}>
-        {generating ? 'Generating...' : '⬇️ Download Poster'}
-      </button>
-      <a href={waUrl} target="_blank" rel="noopener noreferrer" className="w-full py-3 rounded-xl font-semibold text-center text-white block" style={{ background: '#25D366' }}>
-        📲 Share on WhatsApp
-      </a>
-      <button onClick={handleCopy} className="w-full py-3 rounded-xl font-semibold" style={{ background: 'var(--color-surface-2)', color: 'var(--color-text)' }}>
-        {copied ? '✅ Link Copied!' : '🔗 Copy Link'}
-      </button>
-      <a href="/vote" className="w-full py-3 rounded-xl font-semibold text-center block" style={{ background: 'var(--color-surface)', color: 'var(--color-text-muted)' }}>
-        🗳️ Vote Too!
-      </a>
+      <Button size="lg" onClick={handleDownload} disabled={generating} className="w-full">
+        <Download className="w-4 h-4" />
+        {generating ? 'Generating...' : 'Download Poster'}
+      </Button>
+      <Button size="lg" variant="whatsapp" className="w-full" asChild>
+        <a href={waUrl} target="_blank" rel="noopener noreferrer">
+          <MessageCircle className="w-4 h-4" />
+          Share on WhatsApp
+        </a>
+      </Button>
+      <Button size="lg" variant="outline" className="w-full" onClick={handleCopy}>
+        <Link2 className="w-4 h-4" />
+        {copied ? '✅ Copied!' : 'Copy Link'}
+      </Button>
+      <Button size="lg" variant="ghost" className="w-full" asChild>
+        <a href="/vote">
+          <Vote className="w-4 h-4" />
+          Vote Too!
+        </a>
+      </Button>
     </div>
   );
 }

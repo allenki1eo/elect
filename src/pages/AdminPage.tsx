@@ -4,7 +4,7 @@ import { useQuery, useMutation } from 'convex/react';
 import { api } from '../../convex/_generated/api';
 import { Candidate } from '../types';
 
-const ADMIN_PASSWORD = import.meta.env.VITE_ADMIN_PASSWORD ?? 'tenri2025admin';
+const ADMIN_PASSWORD = import.meta.env.VITE_ADMIN_PASSWORD ?? 'tenri2026admin';
 
 export default function AdminPage() {
   const [authed, setAuthed] = useState(false);
