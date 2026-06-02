@@ -1,4 +1,4 @@
-import { query, internalMutation } from "./_generated/server";
+import { query, mutation, internalMutation } from "./_generated/server";
 import { v } from "convex/values";
 
 export const getCandidates = query({
@@ -17,6 +17,63 @@ export const getCandidateById = query({
   args: { id: v.id("candidates") },
   handler: async (ctx, args) => {
     return await ctx.db.get(args.id);
+  },
+});
+
+export const getAllCandidates = query({
+  args: {},
+  handler: async (ctx) => {
+    const rows = await ctx.db.query("candidates").collect();
+    return rows.sort((a, b) => a.order - b.order);
+  },
+});
+
+export const addCandidate = mutation({
+  args: {
+    name: v.string(),
+    nickname: v.string(),
+    class: v.string(),
+    bio: v.string(),
+    manifesto: v.array(v.string()),
+    colorHex: v.string(),
+    order: v.number(),
+  },
+  handler: async (ctx, args) => {
+    return await ctx.db.insert("candidates", {
+      ...args,
+      photoStorageId: "",
+      photoUrl: "",
+      isActive: true,
+    });
+  },
+});
+
+export const updateCandidate = mutation({
+  args: {
+    id: v.id("candidates"),
+    name: v.optional(v.string()),
+    nickname: v.optional(v.string()),
+    class: v.optional(v.string()),
+    bio: v.optional(v.string()),
+    manifesto: v.optional(v.array(v.string())),
+    colorHex: v.optional(v.string()),
+    isActive: v.optional(v.boolean()),
+    order: v.optional(v.number()),
+  },
+  handler: async (ctx, args) => {
+    const { id, ...fields } = args;
+    const updates: Record<string, unknown> = {};
+    for (const [k, val] of Object.entries(fields)) {
+      if (val !== undefined) updates[k] = val;
+    }
+    await ctx.db.patch(id, updates);
+  },
+});
+
+export const deleteCandidate = mutation({
+  args: { id: v.id("candidates") },
+  handler: async (ctx, args) => {
+    await ctx.db.delete(args.id);
   },
 });
 
