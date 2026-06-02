@@ -2,6 +2,7 @@ import { query, mutation } from "./_generated/server";
 import { v } from "convex/values";
 import { httpAction } from "./_generated/server";
 import { api } from "./_generated/api";
+import { customAlphabet } from "nanoid";
 
 export const getResults = query({
   args: {},
@@ -136,7 +137,6 @@ export const insertVote = mutation({
     fingerprint: v.string(),
   },
   handler: async (ctx, args) => {
-    const { customAlphabet } = await import("nanoid");
     const nanoid = customAlphabet("abcdefghijklmnopqrstuvwxyz0123456789", 10);
     const shareToken = nanoid();
 
