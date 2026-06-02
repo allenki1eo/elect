@@ -1,4 +1,5 @@
 import { httpRouter } from "convex/server";
+import { httpAction } from "./_generated/server";
 import { castVoteAction } from "./votes";
 
 const http = httpRouter();
@@ -12,7 +13,7 @@ http.route({
 http.route({
   path: "/cast-vote",
   method: "OPTIONS",
-  handler: async (_, request) => {
+  handler: httpAction(async () => {
     return new Response(null, {
       status: 204,
       headers: {
@@ -21,7 +22,7 @@ http.route({
         "Access-Control-Allow-Headers": "Content-Type",
       },
     });
-  },
+  }),
 });
 
 export default http;
