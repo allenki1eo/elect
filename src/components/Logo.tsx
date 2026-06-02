@@ -10,7 +10,8 @@ export default function Logo({ className, size = 48 }: Props) {
       width={size}
       height={size}
       className={className}
-      style={{ objectFit: 'contain' }}
+      style={{ objectFit: 'contain', display: 'inline-block', minWidth: size, minHeight: size }}
+      onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
     />
   );
 }

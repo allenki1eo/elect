@@ -25,9 +25,29 @@
 
 body {
   background-color: var(--color-bg);
+  background-image: url('/thene.png');
+  background-size: cover;
+  background-position: center top;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
   color: var(--color-text);
   font-family: var(--font-body);
   min-height: 100vh;
+}
+
+/* Dark overlay so text stays readable over the background */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 10, 15, 0.82);
+  pointer-events: none;
+  z-index: 0;
+}
+
+#root {
+  position: relative;
+  z-index: 1;
 }
 
 h1, h2, h3, h4 {
